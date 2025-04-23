@@ -11,6 +11,7 @@ class Game:
         pygame.init()
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("PyPokeRpg")
+        self.clock = pygame.time.Clock()
 
         # groups
         self.all_sprites = pygame.sprite.Group()
@@ -32,6 +33,8 @@ class Game:
 
     def run(self):
         while True:
+            dt = self.clock.tick() / 1000
+
             # event loop
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -39,6 +42,7 @@ class Game:
                     exit()
 
             # game logic
+            self.all_sprites.update(dt)
             self.all_sprites.draw(self.display_surface)
             pygame.display.update()
 
