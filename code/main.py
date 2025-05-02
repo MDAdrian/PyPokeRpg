@@ -27,15 +27,11 @@ class Game:
         }
 
     def setup(self, tmx_map, player_start_pos):
-        # TODO: stopped at 51:41
         # terrain
-        for x,y,surf in tmx_map.get_layer_by_name('Terrain').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
-        
-        # Terrain Top
-        for x,y,surf in tmx_map.get_layer_by_name('Terrain Top').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
-
+        for layer in ['Terrain', 'Terrain Top']:        
+            for x,y,surf in tmx_map.get_layer_by_name(layer).tiles():
+                Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
+            
         # objects
         for obj in tmx_map.get_layer_by_name('Objects'):
             Sprite((obj.x, obj.y), obj.image, self.all_sprites)
