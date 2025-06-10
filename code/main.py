@@ -1,19 +1,21 @@
-from settings import *
-from pytmx.util_pygame import load_pygame
-from os.path import join
+from pygame import Clock
 
-from sprites import AnimatedSprite, Sprite
+from config import COAST_PATH, CHARACTERS_PATH
+from config import HOSPITAL_PATH
+from config import WATER_PATH
+from config import WORLD_PATH
 from entities import Player
 from groups import AllSprites
-
+from sprites import AnimatedSprite, Sprite
 from support import *
 
+
 class Game:
-    def __init__(self): 
+    def __init__(self):
         pygame.init()
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("PyPokeRpg")
-        self.clock = pygame.time.Clock()
+        self.clock = Clock()
 
         # groups
         self.all_sprites = AllSprites()
@@ -23,12 +25,13 @@ class Game:
     
     def import_assets(self):
         self.tmx_maps = {
-            'world': load_pygame(join('data', 'maps', 'world.tmx')),
-            'hospital': load_pygame(join('data', 'maps', 'hospital.tmx'))
+            'world': load_pygame(WORLD_PATH),
+            'hospital': load_pygame(HOSPITAL_PATH)
         }
         self.overworld_frames = {
-            'water': import_folder('graphics', 'tilesets', 'water'),
-            'coast': coast_importer(24, 12, 'graphics', 'tilesets', 'coast')
+            'water': import_folder(WATER_PATH),
+            'coast': coast_importer(24, 12, COAST_PATH),
+            'characters': all_character_import(CHARACTERS_PATH)
         }
         
 
@@ -45,7 +48,10 @@ class Game:
         # entities
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player' and obj.properties['pos'] == player_start_pos:
-                self.player = Player((obj.x, obj.y), self.all_sprites)
+                self.player = Player(
+                    pos = (obj.x, obj.y),
+                    frames= self.overworld_frames['characters']['player'],
+                    groups= self.all_sprites)
 
         # water
         for obj in tmx_map.get_layer_by_name('Water'):
