@@ -4,7 +4,7 @@ from config import COAST_PATH, CHARACTERS_PATH
 from config import HOSPITAL_PATH
 from config import WATER_PATH
 from config import WORLD_PATH
-from entities import Player
+from entities import Player, Character
 from groups import AllSprites
 from sprites import AnimatedSprite, Sprite
 from support import *
@@ -47,11 +47,20 @@ class Game:
 
         # entities
         for obj in tmx_map.get_layer_by_name('Entities'):
-            if obj.name == 'Player' and obj.properties['pos'] == player_start_pos:
-                self.player = Player(
+            if obj.name == 'Player':
+                if obj.properties['pos'] == player_start_pos:
+                    self.player = Player(
+                        pos = (obj.x, obj.y),
+                        frames= self.overworld_frames['characters']['player'],
+                        groups= self.all_sprites,
+                        facing_direction = obj.properties['direction'])
+
+            else:
+                Character(
                     pos = (obj.x, obj.y),
-                    frames= self.overworld_frames['characters']['player'],
-                    groups= self.all_sprites)
+                    frames = self.overworld_frames['characters'][obj.properties['graphic']],
+                    groups = self.all_sprites,
+                    facing_direction = obj.properties['direction'])
 
         # water
         for obj in tmx_map.get_layer_by_name('Water'):
