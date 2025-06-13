@@ -6,7 +6,7 @@ from config import WATER_PATH
 from config import WORLD_PATH
 from entities import Player, Character
 from groups import AllSprites
-from sprites import AnimatedSprite, Sprite
+from sprites import AnimatedSprite, Sprite, MonsterPatchSprite
 from support import *
 
 
@@ -63,7 +63,7 @@ class Game:
 
         # grass patches
         for obj in tmx_map.get_layer_by_name('Monsters'):
-            Sprite((obj.x, obj.y), obj.image, self.all_sprites)
+            MonsterPatchSprite((obj.x, obj.y), obj.image, self.all_sprites, obj.properties['biome'])
 
         # entities
         for obj in tmx_map.get_layer_by_name('Entities'):
