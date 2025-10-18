@@ -1,7 +1,6 @@
-from settings import *
+from code.settings import *
 from os.path import join
 from os import walk
-from pytmx.util_pygame import load_pygame
 
 # imports 
 def import_image(*path, alpha = True, format = 'png'):
