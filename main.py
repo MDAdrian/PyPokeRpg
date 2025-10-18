@@ -6,7 +6,7 @@ from code.config import WORLD_PATH, HOSPITAL_PATH, WATER_PATH, COAST_PATH, CHARA
 from code.entities import Player, Character
 from code.groups import AllSprites
 from code.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
-from code.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite
+from code.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite
 from code.support import import_folder, coast_importer, all_character_import
 
 
@@ -60,7 +60,7 @@ class Game:
             if obj.name == 'top':
                 Sprite((obj.x, obj.y), obj.image, self.all_sprites, WORLD_LAYERS['top'])
             else:
-                Sprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
+                CollidableSprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
 
         # collision objects
         for obj in tmx_map.get_layer_by_name('Collisions'):
