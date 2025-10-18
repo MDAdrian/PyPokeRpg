@@ -6,7 +6,7 @@ from code.config import WORLD_PATH, HOSPITAL_PATH, WATER_PATH, COAST_PATH, CHARA
 from code.entities import Player, Character
 from code.groups import AllSprites
 from code.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
-from code.sprites import Sprite, AnimatedSprite, MonsterPatchSprite
+from code.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite
 from code.support import import_folder, coast_importer, all_character_import
 
 
@@ -19,6 +19,7 @@ class Game:
 
         # groups
         self.all_sprites = AllSprites()
+        self.collision_sprites = pygame.sprite.Group()
 
         self.import_assets()
         self.setup(self.tmx_maps['world'], 'house')
@@ -59,7 +60,11 @@ class Game:
             if obj.name == 'top':
                 Sprite((obj.x, obj.y), obj.image, self.all_sprites, WORLD_LAYERS['top'])
             else:
-                Sprite((obj.x, obj.y), obj.image, self.all_sprites)
+                Sprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
+
+        # collision objects
+        for obj in tmx_map.get_layer_by_name('Collisions'):
+            BorderSprite((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), self.collision_sprites)
 
         # grass patches
         for obj in tmx_map.get_layer_by_name('Monsters'):
@@ -73,13 +78,15 @@ class Game:
                         pos = (obj.x, obj.y),
                         frames= self.overworld_frames['characters']['player'],
                         groups= self.all_sprites,
-                        facing_direction = obj.properties['direction'])
+                        facing_direction = obj.properties['direction'],
+                        collision_sprites = self.collision_sprites
+                    )
 
             else:
                 Character(
                     pos = (obj.x, obj.y),
                     frames = self.overworld_frames['characters'][obj.properties['graphic']],
-                    groups = self.all_sprites,
+                    groups = (self.all_sprites, self.collision_sprites),
                     facing_direction = obj.properties['direction'])
 
 
