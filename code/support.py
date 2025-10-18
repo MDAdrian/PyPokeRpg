@@ -2,7 +2,7 @@ from code.settings import *
 from os.path import join
 from os import walk
 
-# imports 
+# imports functions
 def import_image(*path, alpha = True, format = 'png'):
 	full_path = join(*path) + f'.{format}'
 	surf = pygame.image.load(full_path).convert_alpha() if alpha else pygame.image.load(full_path).convert()
@@ -81,3 +81,11 @@ def coast_importer(cols, rows, *path):
 				row = pos[1] + row
 				new_dict[terrain][key] = [frame_dict[(col, row)]]
 	return new_dict
+
+# game functions
+def check_connections(radius, entity, target, tolerance=30):
+	relation = vector(target.rect.center) - vector(entity.rect.center)
+	if relation.length() < radius:
+		if abs(relation.y) < tolerance:
+			print('dkialogue')
+			return True
