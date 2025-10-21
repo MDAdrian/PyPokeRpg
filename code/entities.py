@@ -73,15 +73,30 @@ class Character(Entity):
         if check_connections(self.radius, self, self.player) and self.has_los():
             self.player.block()
             self.player.change_facing_direction(self.rect.center)
+            self.start_move()
 
     def has_los(self):
         if vector(self.rect.center).distance_to(self.player.rect.center) < self.radius:
             collisions = [bool(rect.clipline(self.rect.center, self.player.rect.center)) for rect in self.collision_rect]
             return not any(collisions)
 
+    def start_move(self):
+        relation = (vector(self.player.rect.center) - vector(self.rect.center)).normalize()
+        self.direction = vector(round(relation.x), round(relation.y))
+
+    def move(self, dt):
+        if not self.has_moved and self.direction:
+            if not self.hitbox.inflate(10,10).colliderect(self.player.hitbox):
+                self.rect.center += self.direction * self.speed *dt
+                self.hitbox.center = self.rect.center
+            else:
+                self.direction = vector()
+                self.has_moved = True
+
     def update(self, dt):
         self.animate(dt)
         self.raycast()
+        self.move(dt)
 
 class Player(Entity):
     def __init__(self, pos, frames, groups, facing_direction, collision_sprites):
