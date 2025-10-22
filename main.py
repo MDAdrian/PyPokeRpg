@@ -10,11 +10,12 @@ from code.entities import Player, Character
 from code.game_data import TRAINER_DATA
 from code.groups import AllSprites
 from code.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
-from code.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite
+from code.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite, TransitionSprite
 from code.support import import_folder, coast_importer, all_character_import, check_connections
 
 
 class Game:
+    # general
     def __init__(self):
         pygame.init()
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -25,6 +26,7 @@ class Game:
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
         self.character_sprites = pygame.sprite.Group()
+        self.transition_sprites = pygame.sprite.Group()
 
         self.import_assets()
         self.setup(self.tmx_maps['world'], 'house')
@@ -64,6 +66,10 @@ class Game:
             side = obj.properties['side']
             AnimatedSprite((obj.x, obj.y), self.overworld_frames['coast'][terrain][side], self.all_sprites,
                            WORLD_LAYERS['bg'])
+
+        # transitions objects
+        for obj in tmx_map.get_layer_by_name('Transition'):
+            TransitionSprite((obj.x, obj.y),(obj.width, obj.height), (obj.properties['target'], obj.properties['pos']), self.transition_sprites)
 
         # objects
         for obj in tmx_map.get_layer_by_name('Objects'):
@@ -105,6 +111,7 @@ class Game:
                     radius = obj.properties['radius'],
                 )
 
+    # dialog system
     def input(self):
         if not self.dialog_tree:
             keys = pygame.key.get_just_pressed()
@@ -127,10 +134,16 @@ class Game:
         self.dialog_tree = None
         self.player.unblock()
 
+    # transition system
+    def transition_check(self):
+        sprites = [sprite for sprite in self.transition_sprites if sprite.rect.colliderect(self.player.hitbox)]
+        if sprites:
+            self.player.block()
 
     def run(self):
         while True:
             dt = self.clock.tick() / 1000
+            self.display_surface.fill("black")
 
             # event loop
             for event in pygame.event.get():
@@ -138,10 +151,12 @@ class Game:
                     pygame.quit()
                     exit()
 
-            # game logic
+            # update game
             self.input()
+            self.transition_check()
             self.all_sprites.update(dt)
-            self.display_surface.fill("black")
+
+            # drawing
             self.all_sprites.draw(self.player)
 
             # overlays
