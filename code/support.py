@@ -1,3 +1,5 @@
+from pytmx import load_pygame
+
 from code.settings import *
 from os.path import join
 from os import walk
@@ -81,6 +83,13 @@ def coast_importer(cols, rows, *path):
 				row = pos[1] + row
 				new_dict[terrain][key] = [frame_dict[(col, row)]]
 	return new_dict
+
+def tmx_importer(*path):
+	tmx_dict = {}
+	for folder_path, sub_folders, file_names in walk(join(*path)):
+		for file in file_names:
+			tmx_dict[file.split('.')[0]] = load_pygame(join(folder_path, file))
+	return tmx_dict
 
 # game functions
 def check_connections(radius, entity, target, tolerance=30):
