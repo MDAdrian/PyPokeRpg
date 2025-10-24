@@ -2,16 +2,15 @@ import os
 
 import pygame
 from pygame import Clock
-from pytmx import load_pygame
 
-from code.config import WORLD_PATH, HOSPITAL_PATH, WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH
-from code.dialog import DialogTree
-from code.entities import Player, Character
-from code.game_data import TRAINER_DATA
-from code.groups import AllSprites
-from code.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
-from code.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite, TransitionSprite
-from code.support import import_folder, coast_importer, all_character_import, check_connections, tmx_importer
+from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH
+from lib.dialog import DialogTree
+from lib.entities import Player, Character
+from lib.game_data import TRAINER_DATA
+from lib.groups import AllSprites
+from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
+from lib.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite, TransitionSprite
+from lib.support import import_folder, coast_importer, all_character_import, check_connections, tmx_importer
 
 
 class Game:
@@ -30,7 +29,7 @@ class Game:
 
         # transition / tint
         self.transition_target = None
-        self.tint_surf = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.tint_surf = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
         self.tint_mode = 'untint'
         self.tint_progress = 0
         self.tint_direction = -1
@@ -77,16 +76,16 @@ class Game:
             AnimatedSprite((obj.x, obj.y), self.overworld_frames['coast'][terrain][side], self.all_sprites,
                            WORLD_LAYERS['bg'])
 
-        # transitions objects
-        for obj in tmx_map.get_layer_by_name('Transition'):
-            TransitionSprite((obj.x, obj.y),(obj.width, obj.height), (obj.properties['target'], obj.properties['pos']), self.transition_sprites)
-
         # objects
         for obj in tmx_map.get_layer_by_name('Objects'):
             if obj.name == 'top':
                 Sprite((obj.x, obj.y), obj.image, self.all_sprites, WORLD_LAYERS['top'])
             else:
                 CollidableSprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
+
+        # transitions objects
+        for obj in tmx_map.get_layer_by_name('Transition'):
+            TransitionSprite((obj.x, obj.y),(obj.width, obj.height), (obj.properties['target'], obj.properties['pos']), self.transition_sprites)
 
         # collision objects
         for obj in tmx_map.get_layer_by_name('Collisions'):
@@ -101,12 +100,11 @@ class Game:
             if obj.name == 'Player':
                 if obj.properties['pos'] == player_start_pos:
                     self.player = Player(
-                        pos = (obj.x, obj.y),
-                        frames= self.overworld_frames['characters']['player'],
-                        groups= self.all_sprites,
-                        facing_direction = obj.properties['direction'],
-                        collision_sprites = self.collision_sprites
-                    )
+                        pos=(obj.x, obj.y),
+                        frames=self.overworld_frames['characters']['player'],
+                        groups=self.all_sprites,
+                        facing_direction=obj.properties['direction'],
+                        collision_sprites=self.collision_sprites)
 
             else:
                 Character(
@@ -166,6 +164,7 @@ class Game:
         self.tint_progress = max(0, min(self.tint_progress, 255))
 
         self.tint_surf.set_alpha(self.tint_progress)
+        # self.tint_surf.fill((0, 0, 0, self.tint_progress))
         self.display_surface.blit(self.tint_surf, (0,0))
 
     def run(self):
