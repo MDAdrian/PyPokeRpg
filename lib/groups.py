@@ -1,3 +1,5 @@
+import pygame
+
 from lib.entities import Entity
 from lib.settings import *
 from lib.support import import_image

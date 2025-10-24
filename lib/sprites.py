@@ -1,3 +1,5 @@
+import pygame
+
 from lib.settings import *
 
 # overworld sprites

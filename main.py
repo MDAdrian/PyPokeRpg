@@ -29,7 +29,8 @@ class Game:
             1: Monster('Friolera', 29),
             2: Monster('Pluma', 10),
             3: Monster('Finsta', 28),
-            4: Monster('Atrox', 22)
+            4: Monster('Atrox', 22),
+            5: Monster('Jacana', 29)
         }
 
         # groups
@@ -53,6 +54,7 @@ class Game:
         # overlays
         self.dialog_tree = None
         self.monster_index = MonsterIndex(self.player_monsters, self.fonts)
+        self.index_open = False
 
     def import_assets(self):
         self.tmx_maps = tmx_importer('data', 'maps')
@@ -109,7 +111,7 @@ class Game:
             BorderSprite((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), self.collision_sprites)
 
         # grass patches
-        for obj in tmx_map.get_layer_by_name('Monster'):
+        for obj in tmx_map.get_layer_by_name('Monsters'):
             MonsterPatchSprite((obj.x, obj.y), obj.image, self.all_sprites, obj.properties['biome'])
 
         # entities
@@ -150,6 +152,11 @@ class Game:
                         # create dialogue
                         self.create_dialog(character)
                         character.can_rotate = False
+
+            if keys[pygame.K_RETURN]:
+                self.index_open = not self.index_open
+                self.player.blocked = not self.player.blocked
+
 
     def create_dialog(self, character):
         if not self.dialog_tree:
@@ -206,7 +213,7 @@ class Game:
             # overlays
             if self.dialog_tree:
                 self.dialog_tree.update()
-            if self.monster_index:
+            if self.index_open:
                 self.monster_index.update(dt)
 
             self.tint_screen(dt)

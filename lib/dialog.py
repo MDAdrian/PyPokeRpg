@@ -1,3 +1,5 @@
+import pygame
+
 from lib.settings import *
 from lib.timer import Timer
 

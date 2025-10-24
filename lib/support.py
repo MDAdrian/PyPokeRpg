@@ -1,3 +1,4 @@
+import pygame
 from pytmx import load_pygame
 
 from lib.settings import *

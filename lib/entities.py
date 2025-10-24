@@ -1,5 +1,7 @@
 from random import choice
 
+import pygame
+
 from lib.settings import *
 from lib.support import check_connections
 from lib.timer import Timer
