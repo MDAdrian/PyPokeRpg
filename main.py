@@ -3,7 +3,7 @@ import os
 import pygame
 from pygame import Clock
 
-from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH
+from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH, MONSTER_ICONS_PATH
 from lib.dialog import DialogTree
 from lib.entities import Player, Character
 from lib.game_data import TRAINER_DATA
@@ -12,7 +12,8 @@ from lib.monster import Monster
 from lib.monster_index import MonsterIndex
 from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
 from lib.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite, TransitionSprite
-from lib.support import import_folder, coast_importer, all_character_import, check_connections, tmx_importer
+from lib.support import import_folder, coast_importer, all_character_import, check_connections, tmx_importer, \
+    import_folder_dict
 
 
 class Game:
@@ -53,7 +54,7 @@ class Game:
 
         # overlays
         self.dialog_tree = None
-        self.monster_index = MonsterIndex(self.player_monsters, self.fonts)
+        self.monster_index = MonsterIndex(self.player_monsters, self.fonts, self.monster_frames)
         self.index_open = False
 
     def import_assets(self):
@@ -64,6 +65,11 @@ class Game:
             'coast': coast_importer(24, 12, COAST_PATH),
             'characters': all_character_import(CHARACTERS_PATH)
         }
+
+        self.monster_frames = {
+            'icons': import_folder_dict(MONSTER_ICONS_PATH)
+        }
+
         self.fonts = {
             'dialog': pygame.font.Font(os.path.join(FONTS_PATH, 'PixeloidSans.ttf'), 30),
             'regular': pygame.font.Font(os.path.join(FONTS_PATH, 'PixeloidSans.ttf'), 18),

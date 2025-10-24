@@ -5,10 +5,13 @@ from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, COLORS
 
 
 class MonsterIndex:
-    def __init__(self, monsters, fonts):
+    def __init__(self, monsters, fonts, monster_frames):
         self.display_surface = pygame.display.get_surface()
         self.monsters = monsters
         self.fonts = fonts
+
+        # frames
+        self.icon_frames = monster_frames['icons']
 
         # tint surf
         self.tint_surf = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -30,8 +33,12 @@ class MonsterIndex:
             text_surf = self.fonts['regular'].render(monster.name, False, COLORS['white'])
             text_rect = text_surf.get_rect(midleft = item_rect.midleft + vector(90, 0))
 
+            icon_surf = self.icon_frames[monster.name]
+            icon_rect = icon_surf.get_rect(center = item_rect.midleft + vector(45, 0))
+
             pygame.draw.rect(self.display_surface, 'red', item_rect)
             self.display_surface.blit(text_surf, text_rect)
+            self.display_surface.blit(icon_surf, icon_rect)
 
     def update(self, dt):
         # get input
