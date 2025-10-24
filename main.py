@@ -8,6 +8,8 @@ from lib.dialog import DialogTree
 from lib.entities import Player, Character
 from lib.game_data import TRAINER_DATA
 from lib.groups import AllSprites
+from lib.monster import Monster
+from lib.monster_index import MonsterIndex
 from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
 from lib.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite, TransitionSprite
 from lib.support import import_folder, coast_importer, all_character_import, check_connections, tmx_importer
@@ -20,6 +22,15 @@ class Game:
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("PyPokeRpg")
         self.clock = Clock()
+
+        # player monsters
+        self.player_monsters = {
+            0: Monster('Charmadillo', 30),
+            1: Monster('Friolera', 29),
+            2: Monster('Pluma', 10),
+            3: Monster('Finsta', 28),
+            4: Monster('Atrox', 22)
+        }
 
         # groups
         self.all_sprites = AllSprites()
@@ -38,8 +49,11 @@ class Game:
         self.import_assets()
         self.setup(self.tmx_maps['world'], 'house')
 
+
+        # overlays
         self.dialog_tree = None
-    
+        self.monster_index = MonsterIndex(self.player_monsters, self.fonts)
+
     def import_assets(self):
         self.tmx_maps = tmx_importer('data', 'maps')
 
@@ -49,7 +63,10 @@ class Game:
             'characters': all_character_import(CHARACTERS_PATH)
         }
         self.fonts = {
-            'dialog': pygame.font.Font(os.path.join(FONTS_PATH, 'PixeloidSans.ttf'), 30)
+            'dialog': pygame.font.Font(os.path.join(FONTS_PATH, 'PixeloidSans.ttf'), 30),
+            'regular': pygame.font.Font(os.path.join(FONTS_PATH, 'PixeloidSans.ttf'), 18),
+            'small': pygame.font.Font(os.path.join(FONTS_PATH, 'PixeloidSans.ttf'), 14),
+            'bold': pygame.font.Font(os.path.join(FONTS_PATH, 'dogicapixelbold.otf'), 20)
         }
         
 
@@ -92,7 +109,7 @@ class Game:
             BorderSprite((obj.x, obj.y), pygame.Surface((obj.width, obj.height)), self.collision_sprites)
 
         # grass patches
-        for obj in tmx_map.get_layer_by_name('Monsters'):
+        for obj in tmx_map.get_layer_by_name('Monster'):
             MonsterPatchSprite((obj.x, obj.y), obj.image, self.all_sprites, obj.properties['biome'])
 
         # entities
@@ -189,6 +206,8 @@ class Game:
             # overlays
             if self.dialog_tree:
                 self.dialog_tree.update()
+            if self.monster_index:
+                self.monster_index.update(dt)
 
             self.tint_screen(dt)
             pygame.display.update()
