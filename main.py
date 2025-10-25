@@ -3,7 +3,7 @@ import os
 import pygame
 from pygame import Clock
 
-from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH, MONSTER_ICONS_PATH
+from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH, MONSTER_ICONS_PATH, MONSTERS_PATH
 from lib.dialog import DialogTree
 from lib.entities import Player, Character
 from lib.game_data import TRAINER_DATA
@@ -13,7 +13,7 @@ from lib.monster_index import MonsterIndex
 from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
 from lib.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite, TransitionSprite
 from lib.support import import_folder, coast_importer, all_character_import, check_connections, tmx_importer, \
-    import_folder_dict
+    import_folder_dict, monster_importer
 
 
 class Game:
@@ -68,7 +68,8 @@ class Game:
         }
 
         self.monster_frames = {
-            'icons': import_folder_dict(MONSTER_ICONS_PATH)
+            'icons': import_folder_dict(MONSTER_ICONS_PATH),
+            'monsters': monster_importer(4, 2, MONSTERS_PATH)
         }
 
         self.fonts = {
