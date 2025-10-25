@@ -2,6 +2,7 @@ import pygame
 from pygame import Vector2 as vector
 
 from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, COLORS, ANIMATION_SPEED
+from lib.support import draw_bar
 
 
 class MonsterIndex:
@@ -108,6 +109,21 @@ class MonsterIndex:
         name_surf = self.fonts['bold'].render(monster.name, False, COLORS['white'])
         name_rect = name_surf.get_rect(topleft = top_rect.topleft + vector(10, 10))
         self.display_surface.blit(name_surf, name_rect)
+
+        # level
+        level_surf = self.fonts['regular'].render(f'Lvl: {monster.level}', False, COLORS['white'])
+        level_rect = level_surf.get_rect(bottomleft = top_rect.bottomleft + vector(10, -10))
+        self.display_surface.blit(level_surf, level_rect)
+
+        # xp bar
+        draw_bar(
+            surface = self.display_surface,
+            rect = pygame.FRect(level_rect.bottomleft, (100, 4)),
+            value = monster.xp,
+            max_value=monster.level_up,
+            color = COLORS['white'],
+            bg_color = COLORS['dark']
+        )
 
 
     def update(self, dt):
