@@ -72,6 +72,18 @@ class MonsterIndex:
                 self.display_surface.blit(text_surf, text_rect)
                 self.display_surface.blit(icon_surf, icon_rect)
 
+        # lines
+        for i in range(self.visible_items):
+            y = self.main_rect.top + self.item_height * i
+            left = self.main_rect.left
+            right = self.main_rect.left + self.list_width
+            pygame.draw.line(self.display_surface, COLORS['light-gray'], (left, y), (right, y))
+
+        # shadow
+        shadow_surf = pygame.Surface((4, self.main_rect.height))
+        shadow_surf.set_alpha(100)
+        self.display_surface.blit(shadow_surf, (self.main_rect.left + self.list_width - 4, self.main_rect.top))
+
     def update(self, dt):
         # get input
         self.input()
