@@ -31,7 +31,8 @@ class Game:
             2: Monster('Pluma', 10),
             3: Monster('Finsta', 28),
             4: Monster('Atrox', 22),
-            5: Monster('Jacana', 29)
+            5: Monster('Jacana', 29),
+            6: Monster('Sparchu', 1)
         }
 
         # groups

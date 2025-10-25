@@ -36,7 +36,7 @@ class MonsterIndex:
             icon_surf = self.icon_frames[monster.name]
             icon_rect = icon_surf.get_rect(center = item_rect.midleft + vector(45, 0))
 
-            pygame.draw.rect(self.display_surface, 'red', item_rect)
+            pygame.draw.rect(self.display_surface, COLORS['grey'], item_rect)
             self.display_surface.blit(text_surf, text_rect)
             self.display_surface.blit(icon_surf, icon_rect)
 
