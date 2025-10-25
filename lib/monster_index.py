@@ -85,9 +85,16 @@ class MonsterIndex:
         self.display_surface.blit(shadow_surf, (self.main_rect.left + self.list_width - 4, self.main_rect.top))
 
     def display_main(self, dt):
+        # data
+        monster = self.monsters[self.index]
+
         # main bg
         rect = pygame.FRect(self.main_rect.left + self.list_width, self.main_rect.top, self.main_rect.width - self.list_width, self.main_rect.height)
         pygame.draw.rect(self.display_surface, COLORS['dark'], rect, 0, 12, 0, 12, 0)
+
+        # monster display
+        top_rect = pygame.FRect(rect.topleft, (rect.width, rect.height * 0.4))
+        pygame.draw.rect(self.display_surface, COLORS[monster.element], top_rect, 0, 0, 0, 12)
 
 
     def update(self, dt):
