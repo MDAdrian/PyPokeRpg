@@ -25,6 +25,7 @@ class MonsterIndex:
         self.list_width = self.main_rect.width * 0.3
         self.item_height = self.main_rect.height / self.visible_items
         self.index = 0
+        self.selected_index = 0
 
     def input(self):
         keys = pygame.key.get_just_pressed()
@@ -32,15 +33,19 @@ class MonsterIndex:
             self.index -= 1
         if keys[pygame.K_DOWN]:
             self.index += 1
+        if keys[pygame.K_SPACE]:
+            if not self.selected_index:
+                self.selected_index = self.index
         self.index = self.index % len(self.monsters)
 
     def display_list(self):
+        v_offset = 0 if self.index < self.visible_items else  -(self.index - self.visible_items + 1) * self.item_height
         for index, monster in self.monsters.items():
             # colors
             bg_color = COLORS['gray'] if self.index != index else COLORS['light']
-            text_color = COLORS['white']
+            text_color = COLORS['white'] if self.selected_index != index else COLORS['gold']
 
-            top = self.main_rect.top + index * self.item_height
+            top = self.main_rect.top + index * self.item_height + v_offset
             item_rect = pygame.FRect(self.main_rect.left, top, self.list_width, self.item_height)
 
             text_surf = self.fonts['regular'].render(monster.name, False, text_color)
