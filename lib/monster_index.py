@@ -61,7 +61,14 @@ class MonsterIndex:
             icon_rect = icon_surf.get_rect(center = item_rect.midleft + vector(45, 0))
 
             if item_rect.colliderect(self.main_rect):
-                pygame.draw.rect(self.display_surface, bg_color, item_rect)
+                # check corners
+                if item_rect.collidepoint(self.main_rect.topleft):
+                    pygame.draw.rect(self.display_surface, bg_color, item_rect, 0, 0, 12)
+                elif item_rect.collidepoint(self.main_rect.bottomleft + vector(1, -1)):
+                    pygame.draw.rect(self.display_surface, bg_color, item_rect, 0, 0, 0, 0, 12, 0)
+                else:
+                    pygame.draw.rect(self.display_surface, bg_color, item_rect)
+
                 self.display_surface.blit(text_surf, text_rect)
                 self.display_surface.blit(icon_surf, icon_rect)
 
@@ -69,7 +76,6 @@ class MonsterIndex:
         # get input
         self.input()
         self.display_surface.blit(self.tint_surf, (0, 0))
-        pygame.draw.rect(self.display_surface, 'black', self.main_rect)
         # tint
         self.display_list()
         # display the main section
