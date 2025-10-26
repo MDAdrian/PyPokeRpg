@@ -3,7 +3,8 @@ import os
 import pygame
 from pygame import Clock
 
-from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH, MONSTER_ICONS_PATH, MONSTERS_PATH
+from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH, MONSTER_ICONS_PATH, MONSTERS_PATH, \
+    MONSTER_STAT_ICON
 from lib.dialog import DialogTree
 from lib.entities import Player, Character
 from lib.game_data import TRAINER_DATA
@@ -69,7 +70,8 @@ class Game:
 
         self.monster_frames = {
             'icons': import_folder_dict(MONSTER_ICONS_PATH),
-            'monsters': monster_importer(4, 2, MONSTERS_PATH)
+            'monsters': monster_importer(4, 2, MONSTERS_PATH),
+            'ui': import_folder_dict(MONSTER_STAT_ICON)
         }
 
         self.fonts = {
