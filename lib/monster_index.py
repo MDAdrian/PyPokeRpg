@@ -169,7 +169,7 @@ class MonsterIndex:
         info_height = rect.bottom - health_bar_rect.bottom
 
         ## stats
-        stats_rect = pygame.FRect(sides['left'], health_bar_rect.bottom, health_bar_rect.width, info_height).inflate(0, -60)
+        stats_rect = pygame.FRect(sides['left'], health_bar_rect.bottom, health_bar_rect.width, info_height).inflate(0, -60).move(0,15)
         stats_text = self.fonts['regular'].render('Stats', False, COLORS['white'])
         stats_text_rect = stats_text.get_frect(bottomleft = stats_rect.topleft)
         self.display_surface.blit(stats_text, stats_text_rect)
@@ -193,9 +193,19 @@ class MonsterIndex:
             bar_rect = pygame.FRect((text_rect.left, text_rect.bottom + 2), (single_stat_rect.width * 0.9, 4))
             draw_bar(self.display_surface, bar_rect, value, self.max_stats[stat] * monster.level, COLORS['white'], COLORS['black'])
 
-
-
         ## abilities
+        ability_rect = stats_rect.copy().move_to(left = sides['right'])
+        ability_text_surf = self.fonts['regular'].render('Ability', False, COLORS['white'])
+        ability_text_rect = ability_text_surf.get_frect(bottomleft = ability_rect.topleft)
+        self.display_surface.blit(ability_text_surf, ability_text_rect)
+
+        for index, ability in enumerate(monster.get_abilities()):
+            text_surf = self.fonts['regular'].render(ability, False, COLORS['black'])
+            x = ability_rect.left + index % 2 * ability_rect.width / 2
+            y = 20 + ability_rect.top + int(index /2) * (text_surf.get_height() + 30)
+            rect = text_surf.get_frect(topleft = (x, y))
+            pygame.draw.rect(self.display_surface, COLORS['white'], rect.inflate(10, 10), 0, 4)
+            self.display_surface.blit(text_surf, rect)
 
 
     def update(self, dt):
