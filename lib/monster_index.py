@@ -112,7 +112,7 @@ class MonsterIndex:
 
         # level
         level_surf = self.fonts['regular'].render(f'Lvl: {monster.level}', False, COLORS['white'])
-        level_rect = level_surf.get_rect(bottomleft = top_rect.bottomleft + vector(10, -10))
+        level_rect = level_surf.get_rect(bottomleft = top_rect.bottomleft + vector(10, -16))
         self.display_surface.blit(level_surf, level_rect)
 
         # xp bar
@@ -124,6 +124,31 @@ class MonsterIndex:
             color = COLORS['white'],
             bg_color = COLORS['dark']
         )
+
+        # health and energy
+        bar_data = {
+            'width': rect.width * 0.45,
+            'height': 30,
+            'top': top_rect.bottom + rect.width * 0.03,
+            'left_side': rect.left + rect.width / 4,
+            'right_side': rect.left + rect.width * 3/4
+        }
+
+        health_bar_rect =  pygame.FRect((0,0), (bar_data['width'], bar_data['height'])).move_to(midtop = (bar_data['left_side'], bar_data['top']))
+        draw_bar(self.display_surface, health_bar_rect, monster.health, monster.get_stat('max_health'), COLORS['red'], COLORS['black'], radius= 2)
+        hp_text = self.fonts['regular'].render(f'HP: {int(monster.health)}/{int(monster.get_stat("max_health"))}', False, COLORS['white'])
+        hp_rect = hp_text.get_frect(midleft = health_bar_rect.midleft + vector(10, 0))
+        self.display_surface.blit(hp_text, hp_rect)
+
+        energy_bar_rect =  pygame.FRect((0,0), (bar_data['width'], bar_data['height'])).move_to(midtop = (bar_data['right_side'], bar_data['top']))
+        draw_bar(self.display_surface, energy_bar_rect, monster.energy, monster.get_stat('max_energy'), COLORS['blue'], COLORS['black'], radius= 2)
+        energy_text = self.fonts['regular'].render(f'EP: {int(monster.energy)}/{int(monster.get_stat("max_energy"))}', False, COLORS['white'])
+        energy_rect = energy_text.get_frect(midleft = energy_bar_rect.midleft + vector(10, 0))
+        self.display_surface.blit(energy_text, energy_rect)
+
+        # info
+        ## stats
+        ## abilities
 
 
     def update(self, dt):
