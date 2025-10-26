@@ -1,7 +1,7 @@
 import pygame
 from pygame import Vector2 as vector
 
-from lib.game_data import MONSTER_DATA
+from lib.game_data import MONSTER_DATA, ATTACK_DATA
 from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, COLORS, ANIMATION_SPEED
 from lib.support import draw_bar
 
@@ -200,11 +200,12 @@ class MonsterIndex:
         self.display_surface.blit(ability_text_surf, ability_text_rect)
 
         for index, ability in enumerate(monster.get_abilities()):
+            element = ATTACK_DATA[ability]['element']
             text_surf = self.fonts['regular'].render(ability, False, COLORS['black'])
             x = ability_rect.left + index % 2 * ability_rect.width / 2
             y = 20 + ability_rect.top + int(index /2) * (text_surf.get_height() + 30)
             rect = text_surf.get_frect(topleft = (x, y))
-            pygame.draw.rect(self.display_surface, COLORS['white'], rect.inflate(10, 10), 0, 4)
+            pygame.draw.rect(self.display_surface, COLORS[element], rect.inflate(10, 10), 0, 4)
             self.display_surface.blit(text_surf, rect)
 
 
