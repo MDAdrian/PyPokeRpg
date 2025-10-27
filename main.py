@@ -3,8 +3,9 @@ import os
 import pygame
 from pygame import Clock
 
+from lib.battle import Battle
 from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH, MONSTER_ICONS_PATH, MONSTERS_PATH, \
-    MONSTER_STAT_ICON
+    MONSTER_STAT_ICON, BG_FRAMES_PATH
 from lib.dialog import DialogTree
 from lib.entities import Player, Character
 from lib.game_data import TRAINER_DATA
@@ -36,6 +37,14 @@ class Game:
             6: Monster('Sparchu', 1)
         }
 
+        self.dummy_monsters = {
+            0: Monster('Finsta', 15),
+            1: Monster('Atrox', 10),
+            2: Monster('Jacana', 4),
+            3: Monster('Sparchu', 1),
+            4: Monster('Charmadillo', 8),
+        }
+
         # groups
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
@@ -58,6 +67,7 @@ class Game:
         self.dialog_tree = None
         self.monster_index = MonsterIndex(self.player_monsters, self.fonts, self.monster_frames)
         self.index_open = False
+        self.battle = Battle(self.player_monsters, self.dummy_monsters, self.monster_frames, self.bg_frames['forest'], self.fonts)
 
     def import_assets(self):
         self.tmx_maps = tmx_importer('data', 'maps')
@@ -80,6 +90,8 @@ class Game:
             'small': pygame.font.Font(os.path.join(FONTS_PATH, 'PixeloidSans.ttf'), 14),
             'bold': pygame.font.Font(os.path.join(FONTS_PATH, 'dogicapixelbold.otf'), 20)
         }
+
+        self.bg_frames = import_folder_dict(BG_FRAMES_PATH)
         
 
     def setup(self, tmx_map, player_start_pos):
@@ -150,7 +162,7 @@ class Game:
 
     # dialog system
     def input(self):
-        if not self.dialog_tree:
+        if not self.dialog_tree and not self.battle:
             keys = pygame.key.get_just_pressed()
             if keys[pygame.K_SPACE]:
                 for character in self.character_sprites:
@@ -225,6 +237,8 @@ class Game:
                 self.dialog_tree.update()
             if self.index_open:
                 self.monster_index.update(dt)
+            if self.battle:
+                self.battle.update(dt)
 
             self.tint_screen(dt)
             pygame.display.update()
