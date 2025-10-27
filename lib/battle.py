@@ -32,10 +32,12 @@ class Battle:
         if entity == 'player':
             pos = list(BATTLE_POSITIONS['left'].values())[pos_index]
             groups = (self.battle_sprites, self.player_sprites)
-        # else:
-        #     pos =
-        #     groups =
-            MonsterSprite(pos, frames, groups, monster, index, pos_index, entity)
+            frames = {state: [pygame.transform.flip(frame, True, False) for frame in frames] for state, frames in frames.items()}
+        else:
+            pos = list(BATTLE_POSITIONS['right'].values())[pos_index]
+            groups = (self.battle_sprites, self.opponent_sprites)
+
+        MonsterSprite(pos, frames, groups, monster, index, pos_index, entity)
 
     def update(self, dt):
         self.display_surface.blit(self.bg_surface, (0,0))
