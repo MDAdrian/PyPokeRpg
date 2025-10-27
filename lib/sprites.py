@@ -1,3 +1,5 @@
+from random import uniform
+
 import pygame
 
 from lib.settings import *
@@ -55,9 +57,17 @@ class MonsterSprite(pygame.sprite.Sprite):
 		self.entity = entity
 		self.monster = monster
 		self.frame_index, self.frames, self.state = 0, frames, 'idle'
+		self.animation_speed = ANIMATION_SPEED + uniform(-1, 1)
 
 		# sprite setup
 		super().__init__(groups)
 		self.image = self.frames[self.state][self.index]
 		self.rect = self.image.get_frect(center = pos)
+
+	def animate(self, dt):
+		self.frame_index += ANIMATION_SPEED * dt
+		self.image = self.frames[self.state][int(self.frame_index % len(self.frames[self.state]))]
+
+	def update(self, dt):
+		self.animate(dt)
 

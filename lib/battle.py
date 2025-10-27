@@ -41,4 +41,5 @@ class Battle:
 
     def update(self, dt):
         self.display_surface.blit(self.bg_surface, (0,0))
+        self.battle_sprites.update(dt)
         self.battle_sprites.draw(self.display_surface)
