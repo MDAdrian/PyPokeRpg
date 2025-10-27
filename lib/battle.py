@@ -1,7 +1,8 @@
 import pygame
 
 from lib.settings import BATTLE_POSITIONS
-from lib.sprites import MonsterSprite
+from lib.sprites import MonsterSprite, MonsterNameSprite
+from pygame import Vector2 as vector
 
 
 class Battle:
@@ -37,7 +38,13 @@ class Battle:
             pos = list(BATTLE_POSITIONS['right'].values())[pos_index]
             groups = (self.battle_sprites, self.opponent_sprites)
 
-        MonsterSprite(pos, frames, groups, monster, index, pos_index, entity)
+        monster_sprite = MonsterSprite(pos, frames, groups, monster, index, pos_index, entity)
+
+        # ui
+        name_pos = monster_sprite.rect.midleft + vector(16, -70)
+        MonsterNameSprite(name_pos, monster_sprite, self.battle_sprites, self.fonts['regular'])
+        # MonsterLevelSprite()
+        # MonsterStatsSprite()
 
     def update(self, dt):
         self.display_surface.blit(self.bg_surface, (0,0))

@@ -71,3 +71,13 @@ class MonsterSprite(pygame.sprite.Sprite):
 	def update(self, dt):
 		self.animate(dt)
 
+class MonsterNameSprite(pygame.sprite.Sprite):
+	def __init__(self, pos, monster_sprite, groups, font):
+		super().__init__(groups)
+
+		text_surf = font.render(monster_sprite.monster.name, False, COLORS['black'])
+		padding = 20
+
+		self.image = pygame.Surface((text_surf.get_width() + 2 * padding, text_surf.get_height() + 2 * padding))
+		self.rect = self.image.get_frect(midtop = pos)
+
