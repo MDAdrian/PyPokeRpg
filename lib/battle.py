@@ -1,5 +1,6 @@
 import pygame
 
+from lib.groups import BattleSprites
 from lib.settings import BATTLE_POSITIONS
 from lib.sprites import MonsterSprite, MonsterNameSprite, MonsterLevelSprite, MonsterStatsSprite
 from pygame import Vector2 as vector
@@ -18,7 +19,7 @@ class Battle:
         }
 
         # groups
-        self.battle_sprites = pygame.sprite.Group()
+        self.battle_sprites = BattleSprites()
         self.player_sprites = pygame.sprite.Group()
         self.opponent_sprites = pygame.sprite.Group()
         self.setup()
@@ -50,4 +51,4 @@ class Battle:
     def update(self, dt):
         self.display_surface.blit(self.bg_surface, (0,0))
         self.battle_sprites.update(dt)
-        self.battle_sprites.draw(self.display_surface)
+        self.battle_sprites.draw()
