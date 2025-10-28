@@ -15,7 +15,7 @@ from lib.monster_index import MonsterIndex
 from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
 from lib.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite, TransitionSprite
 from lib.support import import_folder, coast_importer, all_character_import, check_connections, tmx_importer, \
-    import_folder_dict, monster_importer
+    import_folder_dict, monster_importer, outline_creator
 
 
 class Game:
@@ -83,6 +83,7 @@ class Game:
             'monsters': monster_importer(4, 2, MONSTERS_PATH),
             'ui': import_folder_dict(MONSTER_STAT_ICON)
         }
+        self.monster_frames['outlines'] = outline_creator(self.monster_frames['monsters'], 4)
 
         self.fonts = {
             'dialog': pygame.font.Font(os.path.join(FONTS_PATH, 'PixeloidSans.ttf'), 30),
