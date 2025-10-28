@@ -1,7 +1,7 @@
 import pygame
 
 from lib.settings import BATTLE_POSITIONS
-from lib.sprites import MonsterSprite, MonsterNameSprite, MonsterLevelSprite
+from lib.sprites import MonsterSprite, MonsterNameSprite, MonsterLevelSprite, MonsterStatsSprite
 from pygame import Vector2 as vector
 
 
@@ -45,7 +45,7 @@ class Battle:
         name_sprite = MonsterNameSprite(name_pos, monster_sprite, self.battle_sprites, self.fonts['regular'])
         level_pos = name_sprite.rect.bottomleft if entity == 'player' else name_sprite.rect.bottomright
         MonsterLevelSprite(entity, level_pos, monster_sprite, self.battle_sprites, self.fonts['small'])
-        # MonsterStatsSprite()
+        MonsterStatsSprite(monster_sprite.rect.midbottom + vector(0, 20), monster_sprite, (150, 48), self.battle_sprites, self.fonts['small'])
 
     def update(self, dt):
         self.display_surface.blit(self.bg_surface, (0,0))
