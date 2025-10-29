@@ -4,6 +4,7 @@ import pygame
 
 from lib.settings import *
 from lib.support import draw_bar
+from lib.timer import Timer
 
 
 # overworld sprites
@@ -68,15 +69,30 @@ class MonsterSprite(pygame.sprite.Sprite):
 		self.image = self.frames[self.state][self.index]
 		self.rect = self.image.get_frect(center = pos)
 
+		# timers
+		self.timers = {
+			'remove highlight': Timer(300, func = lambda: self.set_highlight(False))
+		}
+
 	def animate(self, dt):
 		self.frame_index += ANIMATION_SPEED * dt
 		self.adjusted_frame_index = int(self.frame_index % len(self.frames[self.state]))
 		self.image = self.frames[self.state][self.adjusted_frame_index]
 
+		if self.highlight:
+			white_surf = pygame.mask.from_surface(self.image).to_surface()
+			white_surf.set_colorkey('black')
+			self.image = white_surf
+
+
 	def set_highlight(self, value):
 		self.highlight = value
+		if value:
+			self.timers['remove highlight'].activate()
 
 	def update(self, dt):
+		for timer in self.timers.values():
+			timer.update()
 		self.animate(dt)
 		self.monster.update(dt)
 
