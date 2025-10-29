@@ -64,6 +64,29 @@ class Battle:
         MonsterLevelSprite(entity, level_pos, monster_sprite, self.battle_sprites, self.fonts['small'])
         MonsterStatsSprite(monster_sprite.rect.midbottom + vector(0, 20), monster_sprite, (150, 48), self.battle_sprites, self.fonts['small'])
 
+    def input(self):
+        if self.selection_mode and self.current_monster:
+            keys = pygame.key.get_just_pressed()
+
+            match self.selection_mode:
+                case 'general':
+                    limiter = len(BATTLE_CHOICES['full'])
+
+            if keys[pygame.K_DOWN]:
+                self.indexes[self.selection_mode] = (self.indexes['general'] + 1) % limiter
+            if keys[pygame.K_UP]:
+                self.indexes[self.selection_mode] = (self.indexes['general'] - 1) % limiter
+            if keys[pygame.K_SPACE]:
+                if self.selection_mode == 'general':
+                    if self.indexes['general'] == 0:
+                        print('attack')
+                    if self.indexes['general'] == 1:
+                        print('defense')
+                    if self.indexes['general'] == 2:
+                        print('switch')
+                    if self.indexes['general'] == 3:
+                        print('catch')
+
     # battle system
     def check_active(self):
         for monster_sprite in self.player_sprites.sprites() + self.opponent_sprites.sprites():
@@ -87,12 +110,16 @@ class Battle:
 
     def draw_general(self):
         for index, (option, data_dict) in enumerate(BATTLE_CHOICES['full'].items()):
-            surf = self.monster_frames['ui'][data_dict['icon']]
+            if index == self.indexes['general']:
+                surf = self.monster_frames['ui'][f"{data_dict['icon']}_highlight"]
+            else:
+                surf = pygame.transform.grayscale(self.monster_frames['ui'][data_dict['icon']])
             rect = surf.get_frect(center = self.current_monster.rect.midright + data_dict['pos'])
             self.display_surface.blit(surf, rect)
 
     def update(self, dt):
         # updates
+        self.input()
         self.battle_sprites.update(dt)
         self.check_active()
 
