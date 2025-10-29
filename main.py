@@ -29,20 +29,20 @@ class Game:
         # player monsters
         self.player_monsters = {
             0: Monster('Charmadillo', 30),
-            1: Monster('Friolera', 29),
-            2: Monster('Pluma', 10),
+            1: Monster('Friolera', 50),
+            2: Monster('Pluma', 40),
             3: Monster('Finsta', 28),
             4: Monster('Atrox', 22),
             5: Monster('Jacana', 29),
-            6: Monster('Sparchu', 1)
+            6: Monster('Sparchu', 30)
         }
 
         self.dummy_monsters = {
-            0: Monster('Finsta', 15),
-            1: Monster('Atrox', 10),
+            0: Monster('Finsta', 5),
+            1: Monster('Atrox', 3),
             2: Monster('Jacana', 4),
-            3: Monster('Sparchu', 1),
-            4: Monster('Charmadillo', 8),
+            3: Monster('Sparchu', 2),
+            4: Monster('Charmadillo', 1),
         }
 
         # groups

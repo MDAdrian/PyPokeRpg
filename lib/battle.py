@@ -1,7 +1,8 @@
 import pygame
 
+from lib.game_data import ATTACK_DATA
 from lib.groups import BattleSprites
-from lib.settings import BATTLE_POSITIONS, BATTLE_CHOICES
+from lib.settings import BATTLE_POSITIONS, BATTLE_CHOICES, COLORS
 from lib.sprites import MonsterSprite, MonsterNameSprite, MonsterLevelSprite, MonsterStatsSprite, MonsterOutlineSprite
 from pygame import Vector2 as vector
 
@@ -71,19 +72,26 @@ class Battle:
             match self.selection_mode:
                 case 'general':
                     limiter = len(BATTLE_CHOICES['full'])
+                case 'attacks':
+                    limiter = len(self.current_monster.monster.get_abilities())
 
             if keys[pygame.K_DOWN]:
-                self.indexes[self.selection_mode] = (self.indexes['general'] + 1) % limiter
+                self.indexes[self.selection_mode] = (self.indexes[self.selection_mode] + 1) % limiter
             if keys[pygame.K_UP]:
-                self.indexes[self.selection_mode] = (self.indexes['general'] - 1) % limiter
+                self.indexes[self.selection_mode] = (self.indexes[self.selection_mode] - 1) % limiter
             if keys[pygame.K_SPACE]:
                 if self.selection_mode == 'general':
                     if self.indexes['general'] == 0:
-                        print('attack')
+                        # attack
+                        self.selection_mode = 'attacks'
                     if self.indexes['general'] == 1:
-                        print('defense')
+                        # defense
+                        self.update_all_monsters('resume')
+                        self.current_monster = None
+                        self.selection_mode = None
+                        self.indexes['general'] = 0
                     if self.indexes['general'] == 2:
-                        print('switch')
+                        self.selection_mode = 'switch'
                     if self.indexes['general'] == 3:
                         print('catch')
 
@@ -107,6 +115,10 @@ class Battle:
         if self.current_monster:
             if self.selection_mode == 'general':
                 self.draw_general()
+            if self.selection_mode == 'attacks':
+                self.draw_attacks()
+            if self.selection_mode == 'switch':
+                self.draw_switch()
 
     def draw_general(self):
         for index, (option, data_dict) in enumerate(BATTLE_CHOICES['full'].items()):
@@ -116,6 +128,39 @@ class Battle:
                 surf = pygame.transform.grayscale(self.monster_frames['ui'][data_dict['icon']])
             rect = surf.get_frect(center = self.current_monster.rect.midright + data_dict['pos'])
             self.display_surface.blit(surf, rect)
+    
+    def draw_attacks(self):
+        # data
+        abilities = self.current_monster.monster.get_abilities()
+        width = 150
+        height = 200
+        visible_attacks = 4
+        item_height = height / visible_attacks
+        v_offset = 0
+
+        # background
+        bg_rect = pygame.FRect((0,0), (width, height)).move_to(midleft = self.current_monster.rect.midright + vector(20, 0))
+        pygame.draw.rect(self.display_surface, COLORS['white'], bg_rect, 0, 5)
+
+        for index, ability in enumerate(abilities):
+            selected = index == self.indexes['attacks']
+
+            # text
+            if selected:
+                element = ATTACK_DATA[ability]['element']
+                text_color = COLORS[element]
+            else:
+                text_color = COLORS['light']
+            text_surf = self.fonts['regular'].render(ability, False, text_color)
+
+            # rect
+            text_rect = text_surf.get_frect(center = bg_rect.midtop + vector(0, item_height / 2 + index * item_height + v_offset))
+
+            # draw
+            self.display_surface.blit(text_surf, text_rect)
+
+    def draw_switch(self):
+        pass
 
     def update(self, dt):
         # updates
