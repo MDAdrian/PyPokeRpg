@@ -136,7 +136,7 @@ class Battle:
         height = 200
         visible_attacks = 4
         item_height = height / visible_attacks
-        v_offset = 0
+        v_offset = 0 if self.indexes['attacks'] < visible_attacks else -(self.indexes['attacks'] - visible_attacks + 1) * item_height
 
         # background
         bg_rect = pygame.FRect((0,0), (width, height)).move_to(midleft = self.current_monster.rect.midright + vector(20, 0))
@@ -148,16 +148,25 @@ class Battle:
             # text
             if selected:
                 element = ATTACK_DATA[ability]['element']
-                text_color = COLORS[element]
+                text_color = COLORS[element] if element != 'normal' else COLORS['black']
             else:
                 text_color = COLORS['light']
             text_surf = self.fonts['regular'].render(ability, False, text_color)
 
             # rect
             text_rect = text_surf.get_frect(center = bg_rect.midtop + vector(0, item_height / 2 + index * item_height + v_offset))
+            text_bg_rect = pygame.FRect((0,0), (width, item_height)).move_to(center = text_rect.center)
 
             # draw
-            self.display_surface.blit(text_surf, text_rect)
+            if bg_rect.collidepoint(text_rect.center):
+                if selected:
+                    if text_bg_rect.collidepoint(bg_rect.topleft):
+                        pygame.draw.rect(self.display_surface, COLORS['dark white'], text_bg_rect, 0, 0, 5, 5)
+                    elif text_bg_rect.collidepoint(bg_rect.midbottom + vector(0, -1)):
+                        pygame.draw.rect(self.display_surface, COLORS['dark white'], text_bg_rect, 0, 0, 0, 0, 5, 5)
+                    else:
+                        pygame.draw.rect(self.display_surface, COLORS['dark white'], text_bg_rect)
+                self.display_surface.blit(text_surf, text_rect)
 
     def draw_switch(self):
         pass
