@@ -91,7 +91,11 @@ class Battle:
                     sprite_group = self.opponent_sprites if self.selection_side == 'opponent' else self.player_sprites
                     sprites = {sprite.pos_index: sprite for sprite in sprite_group}
                     monster_sprite = sprites[list(sprites.keys())[self.indexes['target']]]
-                    print(monster_sprite)
+
+                    if self.selected_attack:
+                        self.current_monster.activate_attack(monster_sprite, self.selected_attack)
+                        self.selected_attack, self.current_monster, self.selection_mode = None, None, None
+
                 if self.selection_mode == 'attacks':
                     self.selection_mode = 'target'
                     self.selected_attack = self.current_monster.monster.get_abilities(all = False)[self.indexes['attacks']]
