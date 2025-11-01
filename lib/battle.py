@@ -6,6 +6,8 @@ from lib.settings import BATTLE_POSITIONS, BATTLE_CHOICES, COLORS
 from lib.sprites import MonsterSprite, MonsterNameSprite, MonsterLevelSprite, MonsterStatsSprite, MonsterOutlineSprite
 from pygame import Vector2 as vector
 
+from lib.support import draw_bar
+
 
 class Battle:
     def __init__(self, player_monsters, opponent_monsters, monster_frames, bg_surface, fonts):
@@ -205,6 +207,10 @@ class Battle:
             if bg_rect.collidepoint(item_bg_rect.center):
                 for surf, rect in ((icon_surf, icon_rect), (text_surf, text_rect)):
                     self.display_surface.blit(surf, rect)
+                health_rect = pygame.FRect((text_rect.bottomleft + vector(0.4)), (100, 4))
+                energy_rect = pygame.FRect((health_rect.bottomleft + vector(0, 2)), (80, 4))
+                draw_bar(self.display_surface, health_rect, monster.health, monster.get_stat('max_health'), COLORS['red'], COLORS['black'])
+                draw_bar(self.display_surface, energy_rect, monster.energy, monster.get_stat('max_energy'), COLORS['blue'], COLORS['black'])
 
 
     def update(self, dt):
