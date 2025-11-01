@@ -189,8 +189,17 @@ class Battle:
 
             icon_surf = self.monster_frames['icons'][monster.name]
             icon_rect = icon_surf.get_frect(midleft = bg_rect.topleft + vector(10, item_height / 2 + index * item_height + v_offset))
-            text_surf = self.fonts['regular'].render(f'{monster.name}({monster.level})', False, COLORS['red'] if selected else COLORS['black'])
+            text_surf = self.fonts['regular'].render(f'{monster.name} ({monster.level})', False, COLORS['red'] if selected else COLORS['black'])
             text_rect = text_surf.get_frect(topleft = (bg_rect.left + 90, icon_rect.top))
+
+            # selection bg
+            if selected:
+                if item_bg_rect.collidepoint(bg_rect.topleft):
+                    pygame.draw.rect(self.display_surface, COLORS['dark white'], item_bg_rect, 0, 0, 5, 5)
+                elif item_bg_rect.collidepoint(bg_rect.midbottom + vector(0, -1)):
+                    pygame.draw.rect(self.display_surface, COLORS['dark white'], item_bg_rect, 0, 0, 0, 0, 5, 5)
+                else:
+                    pygame.draw.rect(self.display_surface, COLORS['dark white'], item_bg_rect)
 
             for surf, rect in ((icon_surf, icon_rect), (text_surf, text_rect)):
                 self.display_surface.blit(surf, rect)
