@@ -34,7 +34,10 @@ class Game:
             3: Monster('Finsta', 28),
             4: Monster('Atrox', 22),
             5: Monster('Jacana', 29),
-            6: Monster('Sparchu', 30)
+            6: Monster('Sparchu', 30),
+            7: Monster('Plumette', 30),
+            8: Monster('Cindrill', 30),
+            9: Monster('Cleaf', 30)
         }
 
         self.dummy_monsters = {
