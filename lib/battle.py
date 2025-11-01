@@ -58,7 +58,7 @@ class Battle:
             pos = list(BATTLE_POSITIONS['right'].values())[pos_index]
             groups = (self.battle_sprites, self.opponent_sprites)
 
-        monster_sprite = MonsterSprite(pos, frames, groups, monster, index, pos_index, entity)
+        monster_sprite = MonsterSprite(pos, frames, groups, monster, index, pos_index, entity, self.apply_attack)
         MonsterOutlineSprite(monster_sprite, self.battle_sprites, outline_frames)
 
         # ui
@@ -132,6 +132,12 @@ class Battle:
     def update_all_monsters(self, option):
         for monster_sprite in self.player_sprites.sprites() + self.opponent_sprites.sprites():
             monster_sprite.monster.paused = True if option == 'pause' else False
+
+    def apply_attack(self, target_sprite, attack, amount):
+        print(target_sprite)
+        print(attack)
+        print(amount)
+
 
     # ui
     def draw_ui(self):
