@@ -236,5 +236,5 @@ class Battle:
 
         # draw
         self.display_surface.blit(self.bg_surface, (0,0))
-        self.battle_sprites.draw(self.current_monster)
+        self.battle_sprites.draw(self.current_monster, self.selection_side, self.selection_mode, self.indexes['target'], self.player_sprites, self.opponent_sprites)
         self.draw_ui()
