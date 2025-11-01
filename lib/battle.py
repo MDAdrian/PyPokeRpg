@@ -3,7 +3,8 @@ import pygame
 from lib.game_data import ATTACK_DATA
 from lib.groups import BattleSprites
 from lib.settings import BATTLE_POSITIONS, BATTLE_CHOICES, COLORS
-from lib.sprites import MonsterSprite, MonsterNameSprite, MonsterLevelSprite, MonsterStatsSprite, MonsterOutlineSprite
+from lib.sprites import MonsterSprite, MonsterNameSprite, MonsterLevelSprite, MonsterStatsSprite, MonsterOutlineSprite, \
+    AttackSprite
 from pygame import Vector2 as vector
 
 from lib.support import draw_bar
@@ -134,6 +135,12 @@ class Battle:
             monster_sprite.monster.paused = True if option == 'pause' else False
 
     def apply_attack(self, target_sprite, attack, amount):
+        # play animation
+        AttackSprite(target_sprite.rect.center, self.monster_frames['attacks'][ATTACK_DATA[attack]['animation']], self.battle_sprites)
+        # get correct damage amount (defense, element)
+        # update monster health
+        # resume
+
         print(target_sprite)
         print(attack)
         print(amount)

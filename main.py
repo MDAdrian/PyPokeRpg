@@ -5,7 +5,7 @@ from pygame import Clock
 
 from lib.battle import Battle
 from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH, MONSTER_ICONS_PATH, MONSTERS_PATH, \
-    MONSTER_STAT_ICON, BG_FRAMES_PATH
+    MONSTER_STAT_ICON, BG_FRAMES_PATH, ATTACK_IMPORT_PATH
 from lib.dialog import DialogTree
 from lib.entities import Player, Character
 from lib.game_data import TRAINER_DATA
@@ -15,7 +15,7 @@ from lib.monster_index import MonsterIndex
 from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
 from lib.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite, TransitionSprite
 from lib.support import import_folder, coast_importer, all_character_import, check_connections, tmx_importer, \
-    import_folder_dict, monster_importer, outline_creator
+    import_folder_dict, monster_importer, outline_creator, attack_import
 
 
 class Game:
@@ -84,7 +84,8 @@ class Game:
         self.monster_frames = {
             'icons': import_folder_dict(MONSTER_ICONS_PATH),
             'monsters': monster_importer(4, 2, MONSTERS_PATH),
-            'ui': import_folder_dict(MONSTER_STAT_ICON)
+            'ui': import_folder_dict(MONSTER_STAT_ICON),
+            'attacks': attack_import(ATTACK_IMPORT_PATH)
         }
         self.monster_frames['outlines'] = outline_creator(self.monster_frames['monsters'], 4)
 
