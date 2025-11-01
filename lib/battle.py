@@ -182,7 +182,7 @@ class Battle:
 
         # monsters
         active_monsters = [(monster_sprite.index, monster_sprite.monster) for monster_sprite in self.player_sprites]
-        self.available_monsters = {index: monster for index, monster in self.monster_data['player'].items() if (index, monster not in active_monsters) and monster.health > 0}
+        self.available_monsters = {index: monster for index, monster in self.monster_data['player'].items() if (index, monster) not in active_monsters and monster.health > 0}
         for index, monster in enumerate(self.available_monsters.values()):
             selected = index == self.indexes['switch']
             item_bg_rect = pygame.FRect((0,0), (width, item_height)).move_to(midleft = (bg_rect.left, bg_rect.top + item_height / 2 + index * item_height + v_offset))
@@ -201,8 +201,10 @@ class Battle:
                 else:
                     pygame.draw.rect(self.display_surface, COLORS['dark white'], item_bg_rect)
 
-            for surf, rect in ((icon_surf, icon_rect), (text_surf, text_rect)):
-                self.display_surface.blit(surf, rect)
+            # limit selection
+            if bg_rect.collidepoint(item_bg_rect.center):
+                for surf, rect in ((icon_surf, icon_rect), (text_surf, text_rect)):
+                    self.display_surface.blit(surf, rect)
 
 
     def update(self, dt):
