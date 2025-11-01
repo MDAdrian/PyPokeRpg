@@ -98,6 +98,9 @@ class Battle:
                         self.selection_mode = 'switch'
                     if self.indexes['general'] == 3:
                         print('catch')
+            if keys[pygame.K_ESCAPE]:
+                if self.selection_mode in ('attacks', 'switch', 'target'):
+                    self.selection_mode = 'general'
 
     # battle system
     def check_active(self):
