@@ -19,7 +19,7 @@ class Battle:
         self.fonts = fonts
         self.monster_data = {
             'player': player_monsters,
-            'opponent_monsters': opponent_monsters,
+            'opponent': opponent_monsters,
         }
 
         # groups
@@ -47,6 +47,10 @@ class Battle:
             for index, monster in {k:v for k, v in monster.items() if k <= 2}.items():
                 self.create_monster(monster, index, index, entity)
 
+            # remove opponent monster data
+            for i in range(len(self.opponent_sprites)):
+                del self.monster_data['opponent'][i]
+
     def create_monster(self, monster, index, pos_index, entity):
         frames = self.monster_frames['monsters'][monster.name]
         outline_frames = self.monster_frames['outlines'][monster.name]
@@ -59,7 +63,7 @@ class Battle:
             pos = list(BATTLE_POSITIONS['right'].values())[pos_index]
             groups = (self.battle_sprites, self.opponent_sprites)
 
-        monster_sprite = MonsterSprite(pos, frames, groups, monster, index, pos_index, entity, self.apply_attack)
+        monster_sprite = MonsterSprite(pos, frames, groups, monster, index, pos_index, entity, self.apply_attack, self.create_monster)
         MonsterOutlineSprite(monster_sprite, self.battle_sprites, outline_frames)
 
         # ui
@@ -172,7 +176,15 @@ class Battle:
                     pass
                 else:
                     # opponent
-                    monster_sprite.kill()
+                    new_monster_data = (list(self.monster_data['opponent'].values())[0], monster_sprite.index, monster_sprite.pos_index, 'opponent') if self.monster_data['opponent'] else None
+                    if self.monster_data['opponent']:
+                        del self.monster_data['opponent'][min(self.monster_data['opponent'])]
+
+                    # xp
+
+                monster_sprite.delayed_kill(new_monster_data)
+
+
 
     # ui
     def draw_ui(self):
@@ -281,5 +293,6 @@ class Battle:
 
         # draw
         self.display_surface.blit(self.bg_surface, (0,0))
-        self.battle_sprites.draw(self.current_monster, self.selection_side, self.selection_mode, self.indexes['target'], self.player_sprites, self.opponent_sprites)
+        self.battle_sprites.draw(self.current_monster, self.selection_side, self.selection_mode, self.indexes['target'],
+                                 self.player_sprites, self.opponent_sprites)
         self.draw_ui()
