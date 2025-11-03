@@ -31,19 +31,19 @@ class Game:
             0: Monster('Charmadillo', 20),
             1: Monster('Friolera', 30),
             2: Monster('Pluma', 3),
-            3: Monster('Finsta', 28),
-            4: Monster('Atrox', 22),
-            5: Monster('Jacana', 29),
-            6: Monster('Sparchu', 30),
-            7: Monster('Plumette', 30),
-            8: Monster('Cindrill', 30),
-            9: Monster('Cleaf', 30)
+            # 3: Monster('Finsta', 28),
+            # 4: Monster('Atrox', 22),
+            # 5: Monster('Jacana', 29),
+            # 6: Monster('Sparchu', 30),
+            # 7: Monster('Plumette', 30),
+            # 8: Monster('Cindrill', 30),
+            # 9: Monster('Cleaf', 30)
         }
 
         self.dummy_monsters = {
-            0: Monster('Finsta', 15),
-            1: Monster('Atrox', 20),
-            2: Monster('Jacana', 10),
+            0: Monster('Finsta', 5),
+            1: Monster('Atrox', 6),
+            2: Monster('Jacana', 7),
             3: Monster('Sparchu', 2),
             4: Monster('Charmadillo', 1),
         }

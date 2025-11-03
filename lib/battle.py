@@ -24,6 +24,7 @@ class Battle:
             'player': player_monsters,
             'opponent': opponent_monsters,
         }
+        self.battle_over = False
         self.timers = {
             'opponent delay': Timer(600, func = self.opponent_attack)
         }
@@ -131,6 +132,7 @@ class Battle:
                         self.selection_mode = 'attacks'
                     if self.indexes['general'] == 1:
                         # defense
+                        self.current_monster.monster.defending = True
                         self.update_all_monsters('resume')
                         self.current_monster = None
                         self.selection_mode = None
@@ -154,6 +156,7 @@ class Battle:
     def check_active(self):
         for monster_sprite in self.player_sprites.sprites() + self.opponent_sprites.sprites():
             if monster_sprite.monster.initiative >= 100:
+                monster_sprite.monster.defending = False
                 self.update_all_monsters('pause')
                 monster_sprite.monster.initiative = 0
                 monster_sprite.set_highlight(True)
@@ -188,6 +191,8 @@ class Battle:
             amount *= 0.5
 
         target_defense = 1 - target_sprite.monster.get_stat('defense') / 2000
+        if target_sprite.monster.defending:
+            target_defense -= 0.2
         target_defense = max(0, min(1, target_defense))
 
         # update monster health
@@ -226,6 +231,19 @@ class Battle:
         ability = choice(self.current_monster.monster.get_abilities())
         random_target = choice(self.opponent_sprites.sprites()) if ATTACK_DATA[ability]['target'] == 'player' else choice(self.player_sprites.sprites())
         self.current_monster.activate_attack(random_target, ability)
+
+    def check_end_battle(self):
+        # opponents have been defeated
+        if len(self.opponent_sprites) == 0 and not self.battle_over:
+            self.battle_over = True
+            print('battle won')
+            for monster in self.monster_data['player'].values():
+                monster.initiative = 0
+
+        # player has been defeated
+        if len(self.player_sprites) == 0:
+            pygame.quit()
+            exit()
 
     # ui
     def draw_ui(self):
@@ -327,6 +345,8 @@ class Battle:
 
 
     def update(self, dt):
+        self.check_end_battle()
+
         # updates
         self.input()
         self.update_timers()
