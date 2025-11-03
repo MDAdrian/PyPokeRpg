@@ -29,7 +29,7 @@ class Game:
         # player monsters
         self.player_monsters = {
             0: Monster('Charmadillo', 30),
-            1: Monster('Friolera', 50),
+            1: Monster('Friolera', 10),
             2: Monster('Pluma', 40),
             3: Monster('Finsta', 28),
             4: Monster('Atrox', 22),
