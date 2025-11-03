@@ -70,7 +70,7 @@ class MonsterSprite(pygame.sprite.Sprite):
 
 		# sprite setup
 		super().__init__(groups)
-		self.image = self.frames[self.state][self.index]
+		self.image = self.frames[self.state][self.frame_index]
 		self.rect = self.image.get_frect(center = pos)
 
 		# timers

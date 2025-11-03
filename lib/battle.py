@@ -98,6 +98,13 @@ class Battle:
             if keys[pygame.K_UP]:
                 self.indexes[self.selection_mode] = (self.indexes[self.selection_mode] - 1) % limiter
             if keys[pygame.K_SPACE]:
+                if self.selection_mode == 'switch':
+                    index, new_monster = list(self.available_monsters.items())[self.indexes['switch']]
+                    self.current_monster.kill()
+                    self.create_monster(new_monster, index, self.current_monster.pos_index, 'player')
+                    self.selection_mode = None
+                    self.update_all_monsters('resume')
+
                 if self.selection_mode == 'target':
                     sprite_group = self.opponent_sprites if self.selection_side == 'opponent' else self.player_sprites
                     sprites = {sprite.pos_index: sprite for sprite in sprite_group}
