@@ -125,6 +125,7 @@ class Battle:
                         self.selection_mode = 'switch'
                     if self.indexes['general'] == 3:
                         print('catch')
+                self.indexes = {k: 0 for k in self.indexes}
             if keys[pygame.K_ESCAPE]:
                 if self.selection_mode in ('attacks', 'switch', 'target'):
                     self.selection_mode = 'general'
@@ -198,6 +199,10 @@ class Battle:
                         del self.monster_data['opponent'][min(self.monster_data['opponent'])]
 
                     # xp
+                    xp_amount = monster_sprite.monster.level * 100 / len(self.player_sprites)
+                    for player_sprite in self.player_sprites:
+                        player_sprite.monster.update_xp(xp_amount)
+
 
                 monster_sprite.delayed_kill(new_monster_data)
 
