@@ -6,7 +6,7 @@ from lib.game_data import ATTACK_DATA
 from lib.groups import BattleSprites
 from lib.settings import BATTLE_POSITIONS, BATTLE_CHOICES, COLORS
 from lib.sprites import MonsterSprite, MonsterNameSprite, MonsterLevelSprite, MonsterStatsSprite, MonsterOutlineSprite, \
-    AttackSprite
+    AttackSprite, TimedSprite
 from pygame import Vector2 as vector
 
 from lib.support import draw_bar
@@ -106,6 +106,13 @@ class Battle:
                     if self.selected_attack:
                         self.current_monster.activate_attack(monster_sprite, self.selected_attack)
                         self.selected_attack, self.current_monster, self.selection_mode = None, None, None
+                    else:
+                        if monster_sprite.monster.health < monster_sprite.monster.get_stat('max_health') * 0.9:
+                            self.monster_data['player'][len(self.monster_data['player'])] = monster_sprite.monster
+                            monster_sprite.delayed_kill(None)
+                            self.update_all_monsters('resume')
+                        else:
+                            TimedSprite(monster_sprite.rect.center, self.monster_frames['ui']['cross'], self.battle_sprites, 1000)
 
                 if self.selection_mode == 'attacks':
                     self.selection_mode = 'target'
@@ -124,7 +131,9 @@ class Battle:
                     if self.indexes['general'] == 2:
                         self.selection_mode = 'switch'
                     if self.indexes['general'] == 3:
-                        print('catch')
+                        self.selection_mode = 'target'
+                        self.selection_side = 'opponent'
+
                 self.indexes = {k: 0 for k in self.indexes}
             if keys[pygame.K_ESCAPE]:
                 if self.selection_mode in ('attacks', 'switch', 'target'):
