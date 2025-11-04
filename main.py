@@ -199,7 +199,7 @@ class Game:
                 monster.energy = monster.get_stat('max_energy')
             self.player.unblock()
         elif not character.character_data['defeated']:
-           Battle(self.player_monsters, self.dummy_monsters, self.monster_frames, self.bg_frames['forest'], self.fonts)
+           self.battle = Battle(self.player_monsters, character.monsters, self.monster_frames, self.bg_frames[character.character_data['biome']], self.fonts)
 
     # transition system
     def transition_check(self):
