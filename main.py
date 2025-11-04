@@ -199,7 +199,18 @@ class Game:
                 monster.energy = monster.get_stat('max_energy')
             self.player.unblock()
         elif not character.character_data['defeated']:
-           self.battle = Battle(self.player_monsters, character.monsters, self.monster_frames, self.bg_frames[character.character_data['biome']], self.fonts)
+            self.transition_target = Battle(
+                self.player_monsters,
+                character.monsters,
+                self.monster_frames,
+                self.bg_frames[character.character_data['biome']],
+                self.fonts,
+                self.end_battle,
+                character = character
+            )
+            self.tint_mode = 'tint'
+        else:
+            self.player.unblock()
 
     # transition system
     def transition_check(self):
@@ -216,7 +227,12 @@ class Game:
         if self.tint_mode == 'tint':
            self.tint_progress += self.tint_speed * dt
            if self.tint_progress >= 255:
-               self.setup(self.tmx_maps[self.transition_target[0]], self.transition_target[1])
+               if type(self.transition_target) == Battle:
+                   self.battle = self.transition_target
+               elif self.transition_target == 'level':
+                   self.battle = None
+               else:
+                   self.setup(self.tmx_maps[self.transition_target[0]], self.transition_target[1])
                self.tint_mode = 'untint'
                self.transition_target = None
 
@@ -225,6 +241,14 @@ class Game:
         self.tint_surf.set_alpha(self.tint_progress)
         # self.tint_surf.fill((0, 0, 0, self.tint_progress))
         self.display_surface.blit(self.tint_surf, (0,0))
+
+    def end_battle(self, character):
+        self.transition_target = 'level'
+        self.tint_mode = 'tint'
+        if character:
+            character.character_data['defeated'] = True
+            self.create_dialog(character)
+
 
     def run(self):
         while True:
