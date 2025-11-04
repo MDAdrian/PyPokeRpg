@@ -1,5 +1,3 @@
-from random import randint
-
 from lib.game_data import MONSTER_DATA, ATTACK_DATA
 
 

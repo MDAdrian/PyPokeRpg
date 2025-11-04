@@ -31,13 +31,13 @@ class Game:
             0: Monster('Charmadillo', 20),
             1: Monster('Friolera', 30),
             2: Monster('Pluma', 3),
-            # 3: Monster('Finsta', 28),
-            # 4: Monster('Atrox', 22),
-            # 5: Monster('Jacana', 29),
-            # 6: Monster('Sparchu', 30),
-            # 7: Monster('Plumette', 30),
-            # 8: Monster('Cindrill', 30),
-            # 9: Monster('Cleaf', 30)
+            3: Monster('Finsta', 28),
+            4: Monster('Atrox', 22),
+            5: Monster('Jacana', 29),
+            6: Monster('Sparchu', 30),
+            7: Monster('Plumette', 30),
+            8: Monster('Cindrill', 30),
+            9: Monster('Cleaf', 30)
         }
 
         self.dummy_monsters = {
@@ -70,7 +70,8 @@ class Game:
         self.dialog_tree = None
         self.monster_index = MonsterIndex(self.player_monsters, self.fonts, self.monster_frames)
         self.index_open = False
-        self.battle = Battle(self.player_monsters, self.dummy_monsters, self.monster_frames, self.bg_frames['forest'], self.fonts)
+        # self.battle = Battle(self.player_monsters, self.dummy_monsters, self.monster_frames, self.bg_frames['forest'], self.fonts)
+        self.battle = None
 
     def import_assets(self):
         self.tmx_maps = tmx_importer('data', 'maps')
@@ -163,6 +164,7 @@ class Game:
                     create_dialog = self.create_dialog,
                     collision_sprites = self.collision_sprites,
                     radius = obj.properties['radius'],
+                    nurse = obj.properties['character_id'] == 'Nurse'
                 )
 
     # dialog system
@@ -191,7 +193,13 @@ class Game:
 
     def end_dialog(self, character):
         self.dialog_tree = None
-        self.player.unblock()
+        if character.nurse:
+            for monster in self.player_monsters.values():
+                monster.health = monster.get_stat('max_health')
+                monster.energy = monster.get_stat('max_energy')
+            self.player.unblock()
+        elif not character.character_data['defeated']:
+           Battle(self.player_monsters, self.dummy_monsters, self.monster_frames, self.bg_frames['forest'], self.fonts)
 
     # transition system
     def transition_check(self):
