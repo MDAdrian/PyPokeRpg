@@ -1,4 +1,5 @@
 import os
+from random import randint
 
 import pygame
 from pygame import Clock
@@ -16,6 +17,7 @@ from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
 from lib.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite, TransitionSprite
 from lib.support import import_folder, coast_importer, all_character_import, check_connections, tmx_importer, \
     import_folder_dict, monster_importer, outline_creator, attack_import
+from lib.timer import Timer
 
 
 class Game:
@@ -25,6 +27,8 @@ class Game:
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("PyPokeRpg")
         self.clock = Clock()
+
+        self.encounter_timer = Timer(2000, func = self.monster_encounter)
 
         # player monsters
         self.player_monsters = {
@@ -53,6 +57,7 @@ class Game:
         self.collision_sprites = pygame.sprite.Group()
         self.character_sprites = pygame.sprite.Group()
         self.transition_sprites = pygame.sprite.Group()
+        self.monster_sprites = pygame.sprite.Group()
 
         # transition / tint
         self.transition_target = None
@@ -70,7 +75,6 @@ class Game:
         self.dialog_tree = None
         self.monster_index = MonsterIndex(self.player_monsters, self.fonts, self.monster_frames)
         self.index_open = False
-        # self.battle = Battle(self.player_monsters, self.dummy_monsters, self.monster_frames, self.bg_frames['forest'], self.fonts)
         self.battle = None
 
     def import_assets(self):
@@ -140,7 +144,7 @@ class Game:
 
         # grass patches
         for obj in tmx_map.get_layer_by_name('Monsters'):
-            MonsterPatchSprite((obj.x, obj.y), obj.image, self.all_sprites, obj.properties['biome'])
+            MonsterPatchSprite((obj.x, obj.y), obj.image, (self.all_sprites, self.monster_sprites), obj.properties['biome'], obj.properties['monsters'], obj.properties['level'])
 
         # entities
         for obj in tmx_map.get_layer_by_name('Entities'):
@@ -248,6 +252,31 @@ class Game:
         if character:
             character.character_data['defeated'] = True
             self.create_dialog(character)
+        else:
+            self.player.unblock()
+
+    # monster encounters
+    def check_monster(self):
+        # if player is in tall grass
+        if [sprite for sprite in self.monster_sprites if sprite.rect.colliderect(self.player.hitbox)] and not self.battle and self.player.direction:
+            if not self.encounter_timer.active:
+                self.encounter_timer.activate()
+
+    def monster_encounter(self):
+        sprites = [sprite for sprite in self.monster_sprites if sprite.rect.colliderect(self.player.hitbox)]
+        if sprites and self.player.direction:
+            self.encounter_timer.duration = randint(800, 2500)
+            self.player.block()
+            self.transition_target = Battle(
+                self.player_monsters,
+                {index: Monster(monster, sprites[0].level + randint(-3, 3)) for index, monster in enumerate(sprites[0].monsters[0])},
+                self.monster_frames,
+                self.bg_frames[sprites[0].biome],
+                self.fonts,
+                self.end_battle,
+                character = None
+            )
+            self.tint_mode = 'tint'
 
 
     def run(self):
@@ -262,9 +291,11 @@ class Game:
                     exit()
 
             # update game
+            self.encounter_timer.update()
             self.input()
             self.transition_check()
             self.all_sprites.update(dt)
+            self.check_monster()
 
             # drawing
             self.all_sprites.draw(self.player)
