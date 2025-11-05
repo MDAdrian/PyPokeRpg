@@ -6,9 +6,10 @@ from pygame import Clock
 
 from lib.battle import Battle
 from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH, MONSTER_ICONS_PATH, MONSTERS_PATH, \
-    MONSTER_STAT_ICON, BG_FRAMES_PATH, ATTACK_IMPORT_PATH
+    MONSTER_STAT_ICON, BG_FRAMES_PATH, ATTACK_IMPORT_PATH, STAR_ANIMATION_PATH
 from lib.dialog import DialogTree
 from lib.entities import Player, Character
+from lib.evolution import Evolution
 from lib.game_data import TRAINER_DATA
 from lib.groups import AllSprites
 from lib.monster import Monster
@@ -34,22 +35,14 @@ class Game:
         self.player_monsters = {
             0: Monster('Charmadillo', 20),
             1: Monster('Friolera', 30),
-            2: Monster('Pluma', 3),
-            3: Monster('Finsta', 28),
-            4: Monster('Atrox', 22),
-            5: Monster('Jacana', 29),
-            6: Monster('Sparchu', 30),
-            7: Monster('Plumette', 30),
-            8: Monster('Cindrill', 30),
-            9: Monster('Cleaf', 30)
-        }
-
-        self.dummy_monsters = {
-            0: Monster('Finsta', 5),
-            1: Monster('Atrox', 6),
-            2: Monster('Jacana', 7),
-            3: Monster('Sparchu', 2),
-            4: Monster('Charmadillo', 1),
+            2: Monster('Larvea', 4)
+            # 3: Monster('Finsta', 28),
+            # 4: Monster('Atrox', 22),
+            # 5: Monster('Jacana', 29),
+            # 6: Monster('Sparchu', 30),
+            # 7: Monster('Plumette', 30),
+            # 8: Monster('Cindrill', 30),
+            # 9: Monster('Cleaf', 30)
         }
 
         # groups
@@ -76,6 +69,9 @@ class Game:
         self.monster_index = MonsterIndex(self.player_monsters, self.fonts, self.monster_frames)
         self.index_open = False
         self.battle = None
+        self.evolution = None
+
+        self.check_evolution()
 
     def import_assets(self):
         self.tmx_maps = tmx_importer('data', 'maps')
@@ -102,6 +98,7 @@ class Game:
         }
 
         self.bg_frames = import_folder_dict(BG_FRAMES_PATH)
+        self.star_animation_frames = import_folder(STAR_ANIMATION_PATH)
         
 
     def setup(self, tmx_map, player_start_pos):
@@ -252,8 +249,20 @@ class Game:
         if character:
             character.character_data['defeated'] = True
             self.create_dialog(character)
-        else:
+        elif not self.evolution:
             self.player.unblock()
+            self.check_evolution()
+
+    def check_evolution(self):
+        for index, monster in self.player_monsters.items():
+            if monster.evolution:
+                if monster.level == monster.evolution[1]:
+                    self.player.block()
+                    self.evolution = Evolution(self.monster_frames['monsters'], monster.name, monster.evolution[0], self.fonts['bold'], self.end_evolution, self.star_animation_frames)
+
+    def end_evolution(self):
+        self.evolution = None
+        self.player.unblock()
 
     # monster encounters
     def check_monster(self):
@@ -307,6 +316,8 @@ class Game:
                 self.monster_index.update(dt)
             if self.battle:
                 self.battle.update(dt)
+            if self.evolution:
+                self.evolution.update(dt)
 
             self.tint_screen(dt)
             pygame.display.update()
