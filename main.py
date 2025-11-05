@@ -35,9 +35,8 @@ class Game:
         self.player_monsters = {
             0: Monster('Charmadillo', 20),
             1: Monster('Friolera', 30),
-            2: Monster('Larvea', 4)
-            # 3: Monster('Finsta', 28),
-            # 4: Monster('Atrox', 22),
+            2: Monster('Larvea', 3),
+            3: Monster('Atrox', 1)
             # 5: Monster('Jacana', 29),
             # 6: Monster('Sparchu', 30),
             # 7: Monster('Plumette', 30),
@@ -70,8 +69,6 @@ class Game:
         self.index_open = False
         self.battle = None
         self.evolution = None
-
-        self.check_evolution()
 
     def import_assets(self):
         self.tmx_maps = tmx_importer('data', 'maps')
@@ -212,6 +209,7 @@ class Game:
             self.tint_mode = 'tint'
         else:
             self.player.unblock()
+            self.check_evolution()
 
     # transition system
     def transition_check(self):
@@ -259,6 +257,7 @@ class Game:
                 if monster.level == monster.evolution[1]:
                     self.player.block()
                     self.evolution = Evolution(self.monster_frames['monsters'], monster.name, monster.evolution[0], self.fonts['bold'], self.end_evolution, self.star_animation_frames)
+                    self.player_monsters[index] = Monster(monster.evolution[0], monster.level)
 
     def end_evolution(self):
         self.evolution = None
