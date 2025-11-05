@@ -14,7 +14,7 @@ from lib.timer import Timer
 
 
 class Battle:
-    def __init__(self, player_monsters, opponent_monsters, monster_frames, bg_surface, fonts, end_battle, character):
+    def __init__(self, player_monsters, opponent_monsters, monster_frames, bg_surface, fonts, end_battle, character, sounds):
         # general
         self.display_surface = pygame.display.get_surface()
         self.bg_surface = bg_surface
@@ -25,6 +25,7 @@ class Battle:
             'opponent': opponent_monsters,
         }
         self.character = character
+        self.sounds = sounds
         self.battle_over = False
         self.end_battle = end_battle
         self.timers = {
@@ -175,6 +176,8 @@ class Battle:
     def apply_attack(self, target_sprite, attack, amount):
         # play animation
         AttackSprite(target_sprite.rect.center, self.monster_frames['attacks'][ATTACK_DATA[attack]['animation']], self.battle_sprites)
+
+        self.sounds[ATTACK_DATA[attack]['animation']].play()
 
         # get correct damage amount (defense, element)
         attack_element = ATTACK_DATA[attack]['element']

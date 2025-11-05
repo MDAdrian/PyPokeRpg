@@ -57,13 +57,14 @@ class Entity(pygame.sprite.Sprite):
 		self.blocked = False
 
 class Character(Entity):
-	def __init__(self, pos, frames, groups, facing_direction, character_data, player, create_dialog, collision_sprites, radius, nurse):
+	def __init__(self, pos, frames, groups, facing_direction, character_data, player, create_dialog, collision_sprites, radius, nurse, notice_sound):
 		super().__init__(pos, frames, groups, facing_direction)
 		self.character_data = character_data
 		self.player = player
 		self.create_dialog = create_dialog
 		self.collision_rects = [sprite.rect for sprite in collision_sprites if sprite is not self]
 		self.nurse = nurse
+		self.notice_sound = notice_sound
 		self.monsters = {
 			i: Monster(name, lvl) for i, (name, lvl) in character_data['monsters'].items()
 		} if 'monsters' in character_data else None
@@ -95,6 +96,7 @@ class Character(Entity):
 			self.can_rotate = False
 			self.has_noticed = True
 			self.player.noticed = True
+			self.notice_sound.play()
 
 	def has_los(self):
 		if vector(self.rect.center).distance_to(self.player.rect.center) < self.radius:

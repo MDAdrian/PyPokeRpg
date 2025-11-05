@@ -6,7 +6,7 @@ from pygame import Clock
 
 from lib.battle import Battle
 from lib.config import WATER_PATH, COAST_PATH, CHARACTERS_PATH, FONTS_PATH, MONSTER_ICONS_PATH, MONSTERS_PATH, \
-    MONSTER_STAT_ICON, BG_FRAMES_PATH, ATTACK_IMPORT_PATH, STAR_ANIMATION_PATH
+    MONSTER_STAT_ICON, BG_FRAMES_PATH, ATTACK_IMPORT_PATH, STAR_ANIMATION_PATH, AUDIO_PATH
 from lib.dialog import DialogTree
 from lib.entities import Player, Character
 from lib.evolution import Evolution
@@ -17,7 +17,7 @@ from lib.monster_index import MonsterIndex
 from lib.settings import WINDOW_WIDTH, WINDOW_HEIGHT, TILE_SIZE, WORLD_LAYERS
 from lib.sprites import Sprite, AnimatedSprite, MonsterPatchSprite, BorderSprite, CollidableSprite, TransitionSprite
 from lib.support import import_folder, coast_importer, all_character_import, check_connections, tmx_importer, \
-    import_folder_dict, monster_importer, outline_creator, attack_import
+    import_folder_dict, monster_importer, outline_creator, attack_import, audio_importer
 from lib.timer import Timer
 
 
@@ -61,6 +61,7 @@ class Game:
 
         self.import_assets()
         self.setup(self.tmx_maps['world'], 'house')
+        self.audio['overworld'].play(-1)
 
 
         # overlays
@@ -96,6 +97,8 @@ class Game:
 
         self.bg_frames = import_folder_dict(BG_FRAMES_PATH)
         self.star_animation_frames = import_folder(STAR_ANIMATION_PATH)
+
+        self.audio = audio_importer(AUDIO_PATH)
         
 
     def setup(self, tmx_map, player_start_pos):
@@ -162,7 +165,8 @@ class Game:
                     create_dialog = self.create_dialog,
                     collision_sprites = self.collision_sprites,
                     radius = obj.properties['radius'],
-                    nurse = obj.properties['character_id'] == 'Nurse'
+                    nurse = obj.properties['character_id'] == 'Nurse',
+                    notice_sound = self.audio['notice']
                 )
 
     # dialog system
@@ -197,6 +201,9 @@ class Game:
                 monster.energy = monster.get_stat('max_energy')
             self.player.unblock()
         elif not character.character_data['defeated']:
+            self.audio['overworld'].stop()
+            self.audio['battle'].play(-1)
+
             self.transition_target = Battle(
                 self.player_monsters,
                 character.monsters,
@@ -204,7 +211,8 @@ class Game:
                 self.bg_frames[character.character_data['biome']],
                 self.fonts,
                 self.end_battle,
-                character = character
+                character = character,
+                sounds = self.audio
             )
             self.tint_mode = 'tint'
         else:
@@ -242,6 +250,7 @@ class Game:
         self.display_surface.blit(self.tint_surf, (0,0))
 
     def end_battle(self, character):
+        self.audio['battle'].stop()
         self.transition_target = 'level'
         self.tint_mode = 'tint'
         if character:
@@ -256,12 +265,17 @@ class Game:
             if monster.evolution:
                 if monster.level == monster.evolution[1]:
                     self.player.block()
+                    self.audio['evolution'].play()
                     self.evolution = Evolution(self.monster_frames['monsters'], monster.name, monster.evolution[0], self.fonts['bold'], self.end_evolution, self.star_animation_frames)
                     self.player_monsters[index] = Monster(monster.evolution[0], monster.level)
+        if not self.evolution:
+            self.audio['overworld'].play()
 
     def end_evolution(self):
         self.evolution = None
         self.player.unblock()
+        self.audio['evolution'].stop()
+        self.audio['overworld'].play(-1)
 
     # monster encounters
     def check_monster(self):
@@ -275,6 +289,8 @@ class Game:
         if sprites and self.player.direction:
             self.encounter_timer.duration = randint(800, 2500)
             self.player.block()
+            self.audio['overworld'].stop()
+            self.audio['battle'].play(-1)
             self.transition_target = Battle(
                 self.player_monsters,
                 {index: Monster(monster, sprites[0].level + randint(-3, 3)) for index, monster in enumerate(sprites[0].monsters[0])},
@@ -282,7 +298,8 @@ class Game:
                 self.bg_frames[sprites[0].biome],
                 self.fonts,
                 self.end_battle,
-                character = None
+                character = None,
+                sounds=self.audio
             )
             self.tint_mode = 'tint'
 
